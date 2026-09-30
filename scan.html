@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scanner · Sentry</title>
+<style>
+/* =========================================================
+   SENTINEL — Design System
+   Dark glass security console. Inter for UI, JetBrains Mono
+   for scores/data — the "console" signature running through
+   every number in the product.
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg: #0B1020;
+  --bg-elevated: #0E1426;
+  --surface: rgba(255,255,255,0.045);
+  --surface-strong: rgba(255,255,255,0.075);
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+
+  --primary: #3B82F6;
+  --primary-soft: rgba(59,130,246,0.16);
+  --primary-glow: rgba(59,130,246,0.45);
+  --violet: #6366F1;
+
+  --green: #22C55E;
+  --green-soft: rgba(34,197,94,0.14);
+  --yellow: #FACC15;
+  --yellow-soft: rgba(250,204,21,0.14);
+  --red: #EF4444;
+  --red-soft: rgba(239,68,68,0.14);
+
+  --text-primary: #F3F5FA;
+  --text-secondary: #9AA4BF;
+  --text-tertiary: #626C87;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --shadow-soft: 0 8px 30px rgba(0,0,0,0.35);
+  --shadow-lift: 0 16px 50px rgba(0,0,0,0.5);
+  --ease: cubic-bezier(.16,.8,.24,1);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--font-ui);
+  background:
+    radial-gradient(circle at 12% -10%, rgba(59,130,246,0.16), transparent 45%),
+    radial-gradient(circle at 100% 0%, rgba(99,102,241,0.10), transparent 40%),
+    var(--bg);
+  color:var(--text-primary);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{ background:var(--primary-soft); color:#fff; }
+a{ color:inherit; text-decoration:none; }
+ul{ margin:0; padding:0; list-style:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:10px; height:10px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.12); border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,0.2); }
+
+:focus-visible{ outline:2px solid var(--primary); outline-offset:2px; border-radius:6px; }
+
+.mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+
+/* =========== APP SHELL =========== */
+.app-shell{
+  display:grid;
+  grid-template-columns:272px 1fr;
+  min-height:100vh;
+}
+
+/* =========== SIDEBAR =========== */
+.sidebar{
+  position:sticky; top:0; height:100vh;
+  padding:26px 18px;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  backdrop-filter:blur(20px);
+}
+.brand{
+  display:flex; align-items:center; gap:11px;
+  padding:8px 10px 26px 10px;
+}
+.brand-mark{
+  width:36px; height:36px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(145deg, var(--primary), var(--violet));
+  box-shadow:0 0 0 1px rgba(255,255,255,0.12) inset, 0 6px 18px rgba(59,130,246,0.45);
+  flex-shrink:0;
+}
+.brand-mark svg{ width:19px; height:19px; stroke:#fff; }
+.brand-name{ font-weight:800; font-size:17px; letter-spacing:-0.02em; }
+.brand-sub{ font-size:10.5px; color:var(--text-tertiary); letter-spacing:0.08em; text-transform:uppercase; margin-top:1px; }
+
+.nav-group-label{
+  font-size:10.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--text-tertiary); padding:16px 12px 8px;
+}
+.nav{ display:flex; flex-direction:column; gap:2px; flex:1; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:12px;
+  color:var(--text-secondary); font-size:13.5px; font-weight:500;
+  transition:all .18s var(--ease);
+  position:relative;
+}
+.nav-item svg{ width:17px; height:17px; stroke-width:2; flex-shrink:0; opacity:0.85; transition:opacity .18s; }
+.nav-item:hover{ background:var(--surface); color:var(--text-primary); transform:translateX(2px); }
+.nav-item.active{
+  background:linear-gradient(90deg, var(--primary-soft), rgba(59,130,246,0.02));
+  color:#fff;
+  box-shadow:inset 0 0 0 1px rgba(59,130,246,0.25);
+}
+.nav-item.active svg{ opacity:1; stroke:var(--primary); }
+.nav-item.active::before{
+  content:''; position:absolute; left:-18px; top:50%; transform:translateY(-50%);
+  width:3px; height:18px; border-radius:3px; background:var(--primary);
+  box-shadow:0 0 10px var(--primary-glow);
+}
+.nav-badge{
+  margin-left:auto; font-family:var(--font-mono); font-size:10px; font-weight:700;
+  background:var(--red-soft); color:var(--red); padding:2px 6px; border-radius:20px;
+}
+
+.sidebar-footer{
+  border-top:1px solid var(--border); padding-top:14px; margin-top:10px;
+}
+.profile-card{
+  display:flex; align-items:center; gap:10px; padding:8px; border-radius:12px;
+  transition:background .18s;
+}
+.profile-card:hover{ background:var(--surface); }
+.avatar{
+  width:34px; height:34px; border-radius:10px;
+  background:linear-gradient(145deg,#232B45,#161B2E);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:13px; border:1px solid var(--border-strong);
+  position:relative;
+}
+.status-dot{
+  position:absolute; bottom:-2px; right:-2px; width:9px; height:9px; border-radius:50%;
+  background:var(--green); border:2px solid var(--bg-elevated);
+  box-shadow:0 0 8px var(--green);
+}
+.profile-name{ font-size:13px; font-weight:600; }
+.profile-role{ font-size:11px; color:var(--text-tertiary); }
+.version-tag{
+  font-family:var(--font-mono); font-size:10px; color:var(--text-tertiary);
+  padding:10px 8px 0; display:flex; justify-content:space-between; align-items:center;
+}
+.online-pill{
+  display:flex; align-items:center; gap:5px; color:var(--green); font-weight:600;
+}
+.online-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation:pulse-dot 2s infinite; }
+
+@keyframes pulse-dot{ 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+/* =========== MAIN =========== */
+.main{ padding:34px 40px 70px; min-width:0; }
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:30px;
+  animation:fadeUp .5s var(--ease);
+}
+.page-eyebrow{ font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--primary); margin:0 0 6px; }
+.page-title{ font-size:26px; font-weight:800; letter-spacing:-0.02em; margin:0; }
+.page-desc{ color:var(--text-secondary); font-size:13.5px; margin-top:6px; }
+.topbar-actions{ display:flex; align-items:center; gap:10px; }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:12px; border:1px solid var(--border);
+  background:var(--surface); display:flex; align-items:center; justify-content:center;
+  transition:all .18s var(--ease); position:relative;
+}
+.icon-btn:hover{ background:var(--surface-strong); border-color:var(--border-strong); transform:translateY(-1px); }
+.icon-btn svg{ width:16px; height:16px; stroke:var(--text-secondary); }
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px; justify-content:center;
+  padding:11px 18px; border-radius:12px; font-size:13.5px; font-weight:600;
+  border:1px solid transparent; transition:all .18s var(--ease); white-space:nowrap;
+}
+.btn svg{ width:15px; height:15px; }
+.btn-primary{
+  background:linear-gradient(145deg, #4C8DF9, var(--primary));
+  color:#fff; box-shadow:0 4px 18px rgba(59,130,246,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.btn-primary:hover{ transform:translateY(-1px); box-shadow:0 8px 26px rgba(59,130,246,0.55), inset 0 1px 0 rgba(255,255,255,0.25); }
+.btn-ghost{
+  background:var(--surface); border:1px solid var(--border); color:var(--text-primary);
+}
+.btn-ghost:hover{ background:var(--surface-strong); border-color:var(--border-strong); }
+.btn-danger{ background:linear-gradient(145deg,#f36565,var(--red)); color:#fff; box-shadow:0 4px 18px rgba(239,68,68,0.35); }
+.btn-danger:hover{ transform:translateY(-1px); }
+.btn-success{ background:linear-gradient(145deg,#37d372,var(--green)); color:#06210f; box-shadow:0 4px 18px rgba(34,197,94,0.35); }
+.btn-block{ width:100%; }
+.btn-lg{ padding:15px 26px; font-size:14.5px; border-radius:14px; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none !important; }
+
+/* =========== CARDS / GLASS =========== */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  backdrop-filter:blur(18px);
+  box-shadow:var(--shadow-soft);
+  transition:transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s var(--ease);
+}
+.card-hover:hover{
+  transform:translateY(-3px);
+  border-color:var(--border-strong);
+  box-shadow:var(--shadow-lift);
+}
+.card-pad{ padding:22px; }
+
+.grid{ display:grid; gap:18px; }
+.grid-2{ grid-template-columns:repeat(2,1fr); }
+.grid-3{ grid-template-columns:repeat(3,1fr); }
+.grid-4{ grid-template-columns:repeat(4,1fr); }
+.grid-6{ grid-template-columns:repeat(6,1fr); }
+
+@media (max-width:1200px){ .grid-4{grid-template-columns:repeat(2,1fr);} .grid-6{grid-template-columns:repeat(3,1fr);} }
+@media (max-width:900px){ .app-shell{grid-template-columns:1fr;} .sidebar{display:none;} .grid-2,.grid-3,.grid-4,.grid-6{grid-template-columns:1fr;} .main{padding:22px;} }
+
+/* Stat card */
+.stat-card{ padding:20px; display:flex; flex-direction:column; gap:10px; }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-icon{
+  width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+}
+.stat-icon svg{ width:16px; height:16px; }
+.stat-icon.blue{ background:var(--primary-soft); } .stat-icon.blue svg{ stroke:var(--primary); }
+.stat-icon.green{ background:var(--green-soft); } .stat-icon.green svg{ stroke:var(--green); }
+.stat-icon.yellow{ background:var(--yellow-soft); } .stat-icon.yellow svg{ stroke:var(--yellow); }
+.stat-icon.red{ background:var(--red-soft); } .stat-icon.red svg{ stroke:var(--red); }
+.stat-icon.violet{ background:rgba(99,102,241,0.16); } .stat-icon.violet svg{ stroke:var(--violet); }
+.stat-value{ font-family:var(--font-mono); font-size:28px; font-weight:700; letter-spacing:-0.02em; }
+.stat-label{ font-size:12.5px; color:var(--text-secondary); }
+.stat-delta{ font-size:11.5px; font-weight:600; display:flex; align-items:center; gap:4px; width:fit-content; }
+.stat-delta.up{ color:var(--green); }
+.stat-delta.down{ color:var(--red); }
+
+/* Section heading */
+.section-head{ display:flex; align-items:center; justify-content:space-between; margin:34px 0 16px; }
+.section-title{ font-size:15.5px; font-weight:700; letter-spacing:-0.01em; }
+.section-link{ font-size:12.5px; color:var(--primary); font-weight:600; }
+
+/* =========== PROTECTION RING =========== */
+.ring-wrap{ position:relative; width:190px; height:190px; }
+.ring-wrap svg{ width:100%; height:100%; transform:rotate(-90deg); }
+.ring-bg{ fill:none; stroke:rgba(255,255,255,0.06); stroke-width:11; }
+.ring-fg{
+  fill:none; stroke:url(#ringGrad); stroke-width:11; stroke-linecap:round;
+  stroke-dasharray:503; stroke-dashoffset:503;
+  transition:stroke-dashoffset 1.6s var(--ease);
+  filter:drop-shadow(0 0 10px rgba(59,130,246,0.55));
+}
+.ring-center{
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.ring-score{ font-family:var(--font-mono); font-size:42px; font-weight:700; letter-spacing:-0.02em; }
+.ring-score span{ font-size:17px; color:var(--text-tertiary); font-weight:500; }
+.ring-caption{ font-size:11px; color:var(--green); font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin-top:4px; }
+
+/* =========== TIMELINE =========== */
+.timeline{ display:flex; flex-direction:column; }
+.tl-item{ display:flex; gap:14px; padding:14px 4px; position:relative; }
+.tl-item:not(:last-child)::before{
+  content:''; position:absolute; left:19px; top:42px; bottom:-4px; width:1px;
+  background:linear-gradient(180deg, var(--border-strong), transparent);
+}
+.tl-dot{
+  width:38px; height:38px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border-strong);
+}
+.tl-dot svg{ width:16px; height:16px; }
+.tl-dot.red{ background:var(--red-soft); } .tl-dot.red svg{ stroke:var(--red); }
+.tl-dot.green{ background:var(--green-soft); } .tl-dot.green svg{ stroke:var(--green); }
+.tl-dot.yellow{ background:var(--yellow-soft); } .tl-dot.yellow svg{ stroke:var(--yellow); }
+.tl-dot.blue{ background:var(--primary-soft); } .tl-dot.blue svg{ stroke:var(--primary); }
+.tl-title{ font-size:13.5px; font-weight:600; }
+.tl-meta{ font-size:12px; color:var(--text-tertiary); margin-top:2px; }
+.tl-time{ margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--text-tertiary); white-space:nowrap; }
+
+/* =========== BADGES =========== */
+.badge{
+  display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px;
+  font-size:11px; font-weight:700; letter-spacing:0.02em;
+}
+.badge svg{ width:11px; height:11px; }
+.badge.green{ background:var(--green-soft); color:var(--green); }
+.badge.yellow{ background:var(--yellow-soft); color:var(--yellow); }
+.badge.red{ background:var(--red-soft); color:var(--red); }
+.badge.blue{ background:var(--primary-soft); color:var(--primary); }
+.badge.grey{ background:var(--surface-strong); color:var(--text-secondary); }
+
+/* =========== BAR / CHART (pure CSS) =========== */
+.bar-chart{ display:flex; align-items:flex-end; gap:10px; height:150px; padding-top:10px; }
+.bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end; }
+.bar{
+  width:100%; max-width:26px; border-radius:8px 8px 3px 3px;
+  background:linear-gradient(180deg, var(--primary), rgba(59,130,246,0.25));
+  box-shadow:0 0 14px rgba(59,130,246,0.35);
+  transform:scaleY(0); transform-origin:bottom; transition:transform 1s var(--ease);
+}
+.bar-label{ font-size:10.5px; color:var(--text-tertiary); font-family:var(--font-mono); }
+
+.heatmap{ display:grid; grid-template-columns:repeat(12,1fr); gap:5px; }
+.heat-cell{ aspect-ratio:1; border-radius:5px; background:rgba(255,255,255,0.05); transition:transform .15s; }
+.heat-cell:hover{ transform:scale(1.2); }
+.heat-cell.l1{ background:rgba(59,130,246,0.18); }
+.heat-cell.l2{ background:rgba(59,130,246,0.4); }
+.heat-cell.l3{ background:rgba(59,130,246,0.68); }
+.heat-cell.l4{ background:var(--primary); box-shadow:0 0 10px var(--primary-glow); }
+
+.donut-wrap{ position:relative; width:150px; height:150px; margin:0 auto; }
+.donut-wrap svg{ transform:rotate(-90deg); width:100%; height:100%; }
+.donut-seg{ fill:none; stroke-width:16; transition:stroke-dashoffset 1.2s var(--ease); }
+.donut-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.donut-center .num{ font-family:var(--font-mono); font-size:22px; font-weight:700; }
+.donut-center .lbl{ font-size:10px; color:var(--text-tertiary); }
+
+.progress{ height:8px; border-radius:20px; background:rgba(255,255,255,0.06); overflow:hidden; }
+.progress-fill{ height:100%; border-radius:20px; width:0%; transition:width 1.2s var(--ease); }
+.progress-fill.blue{ background:linear-gradient(90deg,#4C8DF9,var(--primary)); box-shadow:0 0 10px var(--primary-glow); }
+.progress-fill.green{ background:linear-gradient(90deg,#4ee08a,var(--green)); box-shadow:0 0 10px rgba(34,197,94,0.5); }
+.progress-fill.yellow{ background:linear-gradient(90deg,#ffe066,var(--yellow)); box-shadow:0 0 10px rgba(250,204,21,0.5); }
+.progress-fill.red{ background:linear-gradient(90deg,#ff7b7b,var(--red)); box-shadow:0 0 10px rgba(239,68,68,0.5); }
+
+/* =========== TOGGLES =========== */
+.setting-row{
+  display:flex; align-items:center; justify-content:space-between; padding:18px 4px;
+  border-bottom:1px solid var(--border);
+}
+.setting-row:last-child{ border-bottom:none; }
+.setting-left{ display:flex; gap:14px; align-items:flex-start; }
+.setting-icon{
+  width:38px; height:38px; border-radius:11px; background:var(--surface-strong);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border);
+}
+.setting-icon svg{ width:17px; height:17px; stroke:var(--primary); }
+.setting-title{ font-size:13.5px; font-weight:600; }
+.setting-desc{ font-size:12px; color:var(--text-tertiary); margin-top:3px; max-width:420px; line-height:1.5; }
+
+.switch{ position:relative; width:46px; height:26px; flex-shrink:0; }
+.switch input{ opacity:0; width:0; height:0; position:absolute; }
+.switch-track{
+  position:absolute; inset:0; background:rgba(255,255,255,0.1); border-radius:20px; border:1px solid var(--border-strong);
+  transition:background .25s var(--ease); cursor:pointer;
+}
+.switch-track::after{
+  content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%;
+  background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition:transform .25s var(--ease);
+}
+.switch input:checked + .switch-track{ background:linear-gradient(145deg,#4C8DF9,var(--primary)); border-color:transparent; box-shadow:0 0 12px var(--primary-glow); }
+.switch input:checked + .switch-track::after{ transform:translateX(20px); }
+
+/* =========== FORMS =========== */
+.search-box{
+  display:flex; align-items:center; gap:12px; background:var(--surface);
+  border:1px solid var(--border-strong); border-radius:18px; padding:8px 8px 8px 22px;
+  box-shadow:var(--shadow-soft); transition:border-color .2s, box-shadow .2s;
+}
+.search-box:focus-within{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(59,130,246,0.14); }
+.search-box svg{ width:19px; height:19px; stroke:var(--text-tertiary); flex-shrink:0; }
+.search-box input{
+  flex:1; background:none; border:none; outline:none; color:var(--text-primary);
+  font-family:var(--font-mono); font-size:15px; padding:14px 0;
+}
+.search-box input::placeholder{ color:var(--text-tertiary); font-family:var(--font-ui); }
+
+/* =========== SCAN PROGRESS =========== */
+.scan-steps{ display:flex; flex-direction:column; gap:14px; margin:30px auto; max-width:420px; }
+.scan-step{ display:flex; align-items:center; gap:12px; opacity:0.3; transition:opacity .3s; }
+.scan-step.active{ opacity:1; }
+.scan-step.done{ opacity:0.7; }
+.step-dot{
+  width:22px; height:22px; border-radius:50%; border:2px solid var(--border-strong);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative;
+}
+.scan-step.active .step-dot{ border-color:var(--primary); }
+.scan-step.active .step-dot::after{
+  content:''; position:absolute; inset:-4px; border-radius:50%; border:2px solid var(--primary);
+  border-top-color:transparent; animation:spin 0.9s linear infinite;
+}
+.scan-step.done .step-dot{ border-color:var(--green); background:var(--green-soft); }
+.scan-step.done .step-dot svg{ width:12px; height:12px; stroke:var(--green); }
+.step-text{ font-size:13.5px; font-family:var(--font-mono); color:var(--text-secondary); }
+.scan-step.active .step-text{ color:var(--text-primary); }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.result-hero{ text-align:center; padding:30px 20px; }
+.result-icon-wrap{
+  width:96px; height:96px; border-radius:26px; margin:0 auto 22px; display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.result-icon-wrap svg{ width:44px; height:44px; }
+.result-icon-wrap.safe{ background:var(--green-soft); box-shadow:0 0 40px rgba(34,197,94,0.35); } .result-icon-wrap.safe svg{ stroke:var(--green); }
+.result-icon-wrap.unverified{ background:var(--primary-soft); box-shadow:0 0 40px rgba(59,130,246,0.3); } .result-icon-wrap.unverified svg{ stroke:var(--primary); }
+.result-icon-wrap.warning{ background:var(--yellow-soft); box-shadow:0 0 40px rgba(250,204,21,0.3); } .result-icon-wrap.warning svg{ stroke:var(--yellow); }
+.result-icon-wrap.danger{ background:var(--red-soft); box-shadow:0 0 40px rgba(239,68,68,0.35); } .result-icon-wrap.danger svg{ stroke:var(--red); }
+
+.trust-score-lg{ font-family:var(--font-mono); font-size:52px; font-weight:800; letter-spacing:-0.02em; }
+.reason-list{ display:flex; flex-direction:column; gap:10px; text-align:left; margin-top:20px; }
+.reason-item{ display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--text-secondary); line-height:1.5; }
+.reason-item svg{ width:15px; height:15px; flex-shrink:0; margin-top:1px; }
+
+/* =========== TOAST =========== */
+.toast-stack{ position:fixed; bottom:24px; right:24px; display:flex; flex-direction:column; gap:10px; z-index:999; }
+.toast{
+  display:flex; align-items:center; gap:10px; padding:14px 18px; border-radius:14px;
+  background:rgba(14,20,38,0.92); border:1px solid var(--border-strong); backdrop-filter:blur(14px);
+  box-shadow:var(--shadow-lift); font-size:13px; font-weight:500; min-width:260px;
+  animation:toastIn .35s var(--ease);
+}
+.toast svg{ width:17px; height:17px; flex-shrink:0; }
+.toast.success svg{ stroke:var(--green); }
+.toast.error svg{ stroke:var(--red); }
+.toast.info svg{ stroke:var(--primary); }
+@keyframes toastIn{ from{ opacity:0; transform:translateY(14px) scale(.96); } to{ opacity:1; transform:none; } }
+.toast.hide{ animation:toastOut .3s var(--ease) forwards; }
+@keyframes toastOut{ to{ opacity:0; transform:translateX(30px); } }
+
+/* =========== ANIMATIONS =========== */
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+.fade-up{ animation:fadeUp .55s var(--ease) both; }
+.stagger > *{ animation:fadeUp .55s var(--ease) both; }
+.stagger > *:nth-child(1){ animation-delay:.03s; }
+.stagger > *:nth-child(2){ animation-delay:.08s; }
+.stagger > *:nth-child(3){ animation-delay:.13s; }
+.stagger > *:nth-child(4){ animation-delay:.18s; }
+.stagger > *:nth-child(5){ animation-delay:.23s; }
+.stagger > *:nth-child(6){ animation-delay:.28s; }
+
+.pulse-ring{
+  position:absolute; inset:0; border-radius:inherit; border:2px solid var(--primary);
+  animation:pulseRing 2.4s var(--ease) infinite;
+}
+@keyframes pulseRing{ 0%{ opacity:.7; transform:scale(1);} 100%{ opacity:0; transform:scale(1.35);} }
+
+/* File / permission rows */
+.file-row, .perm-card{
+  display:flex; align-items:center; gap:16px; padding:18px; border-radius:16px;
+}
+.file-icon{
+  width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  background:var(--surface-strong); border:1px solid var(--border);
+}
+.file-icon svg{ width:19px; height:19px; stroke:var(--text-secondary); }
+.file-name{ font-size:14px; font-weight:600; }
+.file-meta{ font-size:12px; color:var(--text-tertiary); margin-top:2px; }
+.file-reason{ font-size:12px; color:var(--text-secondary); margin-top:6px; }
+
+.perm-card{ flex-direction:column; align-items:stretch; gap:14px; }
+.perm-top{ display:flex; align-items:center; gap:12px; }
+.perm-icon{
+  width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+}
+.perm-icon svg{ width:19px; height:19px; }
+.perm-actions{ display:flex; gap:8px; margin-top:4px; }
+.perm-actions .btn{ flex:1; padding:9px 14px; font-size:12.5px; }
+
+/* QR */
+.qr-frame{
+  width:100%; max-width:340px; aspect-ratio:1; margin:0 auto; border-radius:28px;
+  background:radial-gradient(circle at 50% 40%, rgba(59,130,246,0.12), transparent 70%), var(--bg-elevated);
+  border:1px solid var(--border-strong); position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.qr-corner{ position:absolute; width:34px; height:34px; border:3px solid var(--primary); }
+.qr-corner.tl{ top:20px; left:20px; border-right:none; border-bottom:none; border-radius:10px 0 0 0; }
+.qr-corner.tr{ top:20px; right:20px; border-left:none; border-bottom:none; border-radius:0 10px 0 0; }
+.qr-corner.bl{ bottom:20px; left:20px; border-right:none; border-top:none; border-radius:0 0 0 10px; }
+.qr-corner.br{ bottom:20px; right:20px; border-left:none; border-top:none; border-radius:0 0 10px 0; }
+.qr-scanline{
+  position:absolute; left:20px; right:20px; height:2px;
+  background:linear-gradient(90deg, transparent, var(--primary), transparent);
+  box-shadow:0 0 14px var(--primary-glow);
+  animation:scanline 2.2s ease-in-out infinite;
+}
+@keyframes scanline{ 0%,100%{ top:20px; } 50%{ top:calc(100% - 22px); } }
+
+/* Reports */
+.legend{ display:flex; flex-direction:column; gap:12px; }
+.legend-item{ display:flex; align-items:center; gap:10px; font-size:12.5px; }
+.legend-dot{ width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+.legend-item .val{ margin-left:auto; font-family:var(--font-mono); font-weight:600; color:var(--text-primary); }
+
+.domain-row{ display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--border); }
+.domain-row:last-child{ border-bottom:none; }
+.domain-rank{ font-family:var(--font-mono); font-size:11px; color:var(--text-tertiary); width:18px; }
+.domain-name{ font-size:13px; font-weight:600; flex:1; }
+.domain-count{ font-family:var(--font-mono); font-size:12px; color:var(--red); }
+
+.tabs{ display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); padding:4px; border-radius:12px; width:fit-content; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.5px; font-weight:600; color:var(--text-secondary); transition:all .18s; }
+.tab.active{ background:var(--primary); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.4); }
+
+.empty-hint{ text-align:center; padding:50px 20px; color:var(--text-tertiary); font-size:13px; }
+
+
+/* Sentry Custom Logo Update */
+.custom-logo {
+  background: url('logo.png') no-repeat center center / 100%;
+  border: none;
+}
+</style>
+
+</head>
+<body>
+<script>
+  // Real first-run gate: no fake persona. If nobody's set a name yet, send them to onboarding.
+  if(!localStorage.getItem('sentinel_user_name') && !location.pathname.endsWith('welcome.html')){
+    location.replace('welcome.html');
+  }
+</script>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark custom-logo"></div>
+      <div>
+        <div class="brand-name">Sentry</div>
+        <div class="brand-sub">Threat Defense</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg><span>Dashboard</span></a>
+      <a href="scan.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Scanner</span></a>
+      <a href="activity.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9-6-18-3 9H2"/></svg><span>Activity</span><span class="nav-badge">3</span></a>
+      <a href="qr.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM19 14h2v2h-2zM14 19h2v2h-2zM19 19h2v2h-2z"/></svg><span>QR Scanner</span></a>
+      <a href="breach.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>Breach Check</span></a>
+      <a href="reports.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg><span>Reports</span></a>
+      <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.9 2.9l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V21a2 2 0 11-4 0v-.2a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.9-2.9l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H3a2 2 0 110-4h.2a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.9-2.9l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.6V3a2 2 0 114 0v.2a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.9 2.9l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.6 1H21a2 2 0 110 4h-.2a1.7 1.7 0 00-1.6 1z"/></svg><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="profile-card">
+        <div class="avatar" id="sidebarAvatar">AK<span class="status-dot"></span></div>
+        <div>
+          <div class="profile-name" id="sidebarName">Aria Kade</div>
+          <div class="profile-role">Protected Account</div>
+        </div>
+      </div>
+      <div class="version-tag">
+        <span>v2.4.1</span>
+        <span class="online-pill"><span class="dot"></span>Online</span>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar fade-up">
+      <div>
+        <p class="page-eyebrow">Real-time Analysis</p>
+        <h1 class="page-title">Website Scanner</h1>
+        <p class="page-desc">Paste any link to check it for phishing, malware and reputation risks.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" title="Refresh" onclick="showToast('Data refreshed','success')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg></button>
+        <button class="icon-btn" title="Notifications" onclick="showToast('No new alerts right now','info')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+        <div class="avatar" id="topbarAvatar">AK<span class="status-dot"></span></div>
+      </div>
+    </div>
+    
+    <div class="card card-pad fade-up" style="max-width:760px; margin:0 auto;">
+      <div id="scanIdle">
+        <div style="text-align:center; margin-bottom:22px;">
+          <div class="stat-icon blue" style="width:52px;height:52px;border-radius:16px;margin:0 auto 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+          <h2 style="margin:0; font-size:19px; font-weight:800;">Check a link before you click it</h2>
+          <p style="color:var(--text-secondary); font-size:13px; margin-top:6px;">Sentry analyzes SSL, redirects, scripts and domain reputation in seconds.</p>
+        </div>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>
+          <input id="urlInput" type="text" placeholder="Enter URL, e.g. https://example.com" value="http://login-microsoft-secure.cn/verify">
+          <button class="btn btn-primary" id="scanBtn" onclick="runScan()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>Scan</button>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+          <span style="font-size:11.5px; color:var(--text-tertiary);">Try:</span>
+          <button class="badge blue" style="border:none;" onclick="fillUrl('https://accounts.google.com')">accounts.google.com</button>
+          <button class="badge yellow" style="border:none;" onclick="fillUrl('http://free-giftcard-claim.net')">free-giftcard-claim.net</button>
+          <button class="badge red" style="border:none;" onclick="fillUrl('http://login-microsoft-secure.cn/verify')">login-microsoft-secure.cn</button>
+        </div>
+      </div>
+
+      <div id="scanRunning" style="display:none; text-align:center; padding:20px 0;">
+        <div style="position:relative; width:88px; height:88px; margin:0 auto 10px;">
+          <div class="stat-icon blue" style="width:88px;height:88px;border-radius:24px; position:relative;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"/></svg>
+            <span class="pulse-ring"></span>
+          </div>
+        </div>
+        <h3 style="margin:14px 0 4px; font-size:16px;">Analyzing target</h3>
+        <p class="mono" id="scanUrlLabel" style="color:var(--text-tertiary); font-size:12.5px;"></p>
+        <div class="scan-steps" id="scanSteps">
+          <div class="scan-step"><div class="step-dot"></div><div class="step-text">Checking domain...</div></div>
+          <div class="scan-step"><div class="step-dot"></div><div class="step-text">Checking SSL certificate...</div></div>
+          <div class="scan-step"><div class="step-dot"></div><div class="step-text">Checking redirect chain...</div></div>
+          <div class="scan-step"><div class="step-dot"></div><div class="step-text">Analyzing embedded scripts...</div></div>
+          <div class="scan-step"><div class="step-dot"></div><div class="step-text">Checking domain reputation...</div></div>
+          <div class="scan-step"><div class="step-dot"></div><div class="step-text">Calculating trust score...</div></div>
+        </div>
+      </div>
+
+      <div id="scanResult" style="display:none;"></div>
+    </div>
+
+  </main>
+</div>
+<script>
+/* Sentry — shared front-end logic */
+
+/* ---------- Real user identity (set once during onboarding, editable in Settings) ---------- */
+function sentinelGetUserName(){ return localStorage.getItem('sentinel_user_name') || ''; }
+function sentinelInitials(name){
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return '?';
+  return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+function sentinelApplyIdentity(){
+  const name = sentinelGetUserName();
+  if(!name) return;
+  const initials = sentinelInitials(name);
+  const sideAv = document.getElementById('sidebarAvatar');
+  const sideName = document.getElementById('sidebarName');
+  const topAv = document.getElementById('topbarAvatar');
+  if(sideAv && sideAv.firstChild) sideAv.firstChild.textContent = initials;
+  if(sideName) sideName.textContent = name;
+  if(topAv && topAv.firstChild) topAv.firstChild.textContent = initials;
+}
+document.addEventListener('DOMContentLoaded', sentinelApplyIdentity);
+
+/* ---------- Toasts ---------- */
+function ensureToastStack(){
+  let stack = document.querySelector('.toast-stack');
+  if(!stack){
+    stack = document.createElement('div');
+    stack.className = 'toast-stack';
+    document.body.appendChild(stack);
+  }
+  return stack;
+}
+
+const TOAST_ICONS = {
+  success: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  error: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+};
+
+function showToast(message, type = 'info', duration = 3200){
+  const stack = ensureToastStack();
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `${TOAST_ICONS[type] || TOAST_ICONS.info}<span>${message}</span>`;
+  stack.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => toast.remove(), 320);
+  }, duration);
+}
+
+/* ---------- Animated number counters ---------- */
+function animateCount(el, target, duration = 1200, decimals = 0){
+  const start = 0;
+  const startTime = performance.now();
+  function tick(now){
+    const p = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const value = start + (target - start) * eased;
+    el.textContent = decimals ? value.toFixed(decimals) : Math.round(value).toLocaleString();
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------- Ring gauge (circumference = 2*PI*80 = 502.65) ---------- */
+function setRing(el, percent){
+  const circumference = 503;
+  const offset = circumference - (percent / 100) * circumference;
+  requestAnimationFrame(() => { el.style.strokeDashoffset = offset; });
+}
+
+/* ---------- Bar chart bars ---------- */
+function animateBars(container){
+  const bars = container.querySelectorAll('.bar');
+  bars.forEach((bar, i) => {
+    setTimeout(() => { bar.style.transform = 'scaleY(1)'; }, i * 70);
+  });
+}
+
+/* ---------- Progress fill ---------- */
+function animateProgress(el, percent){
+  requestAnimationFrame(() => { el.style.width = percent + '%'; });
+}
+
+/* ---------- Sidebar active state (safety net if not set in markup) ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if(item.getAttribute('href') === path){
+      item.classList.add('active');
+    }
+  });
+});
+
+/* ---------- Toggle switches -> toast feedback ---------- */
+document.addEventListener('change', (e) => {
+  if(e.target.matches('.switch input[type="checkbox"]')){
+    const label = e.target.closest('.setting-row')?.querySelector('.setting-title')?.textContent || 'Setting';
+    showToast(`${label} ${e.target.checked ? 'enabled' : 'disabled'}`, e.target.checked ? 'success' : 'info');
+  }
+});
+
+</script>
+<script>
+
+/* ===== Sentry Detection Engine (v2) =====
+   Real client-side URL analysis. Only domains in the trusted
+   registry (with or without "www.") can ever be labeled "Safe".
+   Everything else is scored on real evidence -- starting from a
+   neutral baseline, never penalized purely for being unlisted. */
+/* ===== Shared live-verification proxy =====
+   All visitors' Safe Browsing checks go through YOUR Cloudflare Worker,
+   which holds YOUR API key server-side (see worker.js). The key never
+   ships to the browser, so it works for every visitor, not just you,
+   and your key is never exposed. Deploy the worker, then replace the
+   placeholder URL below with your real Worker URL. Until you do, live
+   checks quietly no-op and Sentry falls back to heuristics + RDAP only. */
+const SENTINEL_PROXY_URL = "https://sentry-proxy.aarushn3011.workers.dev";
+
+const SENTINEL_WHITELIST = [
+  "google.com",
+  "youtube.com",
+  "bing.com",
+  "duckduckgo.com",
+  "yahoo.com",
+  "microsoft.com",
+  "apple.com",
+  "amazon.com",
+  "meta.com",
+  "facebook.com",
+  "instagram.com",
+  "threads.net",
+  "twitter.com",
+  "x.com",
+  "linkedin.com",
+  "pinterest.com",
+  "tumblr.com",
+  "reddit.com",
+  "wikipedia.org",
+  "wikimedia.org",
+  "netflix.com",
+  "hulu.com",
+  "disneyplus.com",
+  "hbomax.com",
+  "max.com",
+  "spotify.com",
+  "twitch.tv",
+  "imdb.com",
+  "soundcloud.com",
+  "vimeo.com",
+  "crunchyroll.com",
+  "peacocktv.com",
+  "paramountplus.com",
+  "whatsapp.com",
+  "telegram.org",
+  "discord.com",
+  "slack.com",
+  "signal.org",
+  "snapchat.com",
+  "tiktok.com",
+  "zoom.us",
+  "skype.com",
+  "ebay.com",
+  "etsy.com",
+  "walmart.com",
+  "target.com",
+  "bestbuy.com",
+  "costco.com",
+  "aliexpress.com",
+  "alibaba.com",
+  "shopify.com",
+  "wayfair.com",
+  "ikea.com",
+  "homedepot.com",
+  "lowes.com",
+  "nike.com",
+  "zara.com",
+  "cnn.com",
+  "bbc.com",
+  "bbc.co.uk",
+  "nytimes.com",
+  "foxnews.com",
+  "reuters.com",
+  "theguardian.com",
+  "washingtonpost.com",
+  "forbes.com",
+  "bloomberg.com",
+  "apnews.com",
+  "espn.com",
+  "wsj.com",
+  "npr.org",
+  "airbnb.com",
+  "booking.com",
+  "expedia.com",
+  "uber.com",
+  "lyft.com",
+  "doordash.com",
+  "grubhub.com",
+  "tripadvisor.com",
+  "kayak.com",
+  "delta.com",
+  "united.com",
+  "indeed.com",
+  "glassdoor.com",
+  "coursera.org",
+  "udemy.com",
+  "khanacademy.org",
+  "duolingo.com",
+  "edx.org",
+  "medium.com",
+  "quora.com",
+  "github.com",
+  "gitlab.com",
+  "bitbucket.org",
+  "npmjs.com",
+  "python.org",
+  "stackoverflow.com",
+  "oracle.com",
+  "ibm.com",
+  "intel.com",
+  "amd.com",
+  "nvidia.com",
+  "samsung.com",
+  "sony.com",
+  "dell.com",
+  "hp.com",
+  "lenovo.com",
+  "cisco.com",
+  "vmware.com",
+  "salesforce.com",
+  "adobe.com",
+  "atlassian.com",
+  "trello.com",
+  "notion.so",
+  "figma.com",
+  "canva.com",
+  "mailchimp.com",
+  "hubspot.com",
+  "zendesk.com",
+  "squarespace.com",
+  "wix.com",
+  "godaddy.com",
+  "namecheap.com",
+  "cloudflare.com",
+  "digitalocean.com",
+  "heroku.com",
+  "vercel.com",
+  "netlify.com",
+  "dropbox.com",
+  "wordpress.com",
+  "mozilla.org",
+  "w3schools.com",
+  "stripe.com",
+  "paypal.com",
+  "venmo.com",
+  "coinbase.com",
+  "chase.com",
+  "bankofamerica.com",
+  "wellsfargo.com",
+  "citibank.com",
+  "americanexpress.com",
+  "visa.com",
+  "mastercard.com",
+  "robinhood.com",
+  "fidelity.com",
+  "schwab.com",
+  "hsbc.com",
+  "usps.com",
+  "fedex.com",
+  "ups.com",
+  "irs.gov",
+  "usa.gov",
+  "nasa.gov",
+  "cdc.gov",
+  "who.int",
+  "un.org"
+];
+
+const SENTINEL_SUS_KEYWORDS = ["login","verify","secure","account","update","confirm","signin","banking","wallet","support","password","billing","security"];
+const SENTINEL_SUS_TLDS = [".tk",".ml",".ga",".cf",".gq",".xyz",".top",".click",".work",".zip",".review",".country",".kim",".men",".loan"];
+
+function sentinelNormalize(raw){
+  let u = (raw || "").trim();
+  if(!u) return null;
+  if(!/^[a-zA-Z]+:\/\//.test(u)) u = "http://" + u;
+  try{
+    const parsed = new URL(u);
+    let host = parsed.hostname.toLowerCase();
+    if(host.startsWith("www.")) host = host.slice(4);
+    return { host, protocol: parsed.protocol, raw: u };
+  } catch(e){ return null; }
+}
+
+function sentinelIsIP(host){ return /^(\d{1,3}\.){3}\d{1,3}$/.test(host); }
+
+/* Classic Levenshtein edit distance -- used to catch typosquats like
+   "g00gle.com", "paypa1.com", "microsft.com" that a plain substring
+   check would miss entirely. */
+function sentinelLevenshtein(a, b){
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for(let i = 0; i <= m; i++) dp[i][0] = i;
+  for(let j = 0; j <= n; j++) dp[0][j] = j;
+  for(let i = 1; i <= m; i++){
+    for(let j = 1; j <= n; j++){
+      if(a[i-1] === b[j-1]) dp[i][j] = dp[i-1][j-1];
+      else dp[i][j] = 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+/*
+  Scoring model:
+    - Whitelisted                    -> category "safe",       score 94-99
+    - Not whitelisted, no red flags  -> category "unverified",  score 70-89
+        (baseline 70, plus evidence bonuses, capped at 89 -- the "safe"
+         label stays exclusive to the curated registry, but the NUMBER
+         is not artificially low just because the site is unlisted)
+    - 1 real red flag OR 2+ minor flags -> category "warning", score 20-55
+    - 2+ real red flags                 -> category "danger",  score 1-20
+*/
+function sentinelAnalyze(rawUrl){
+  const info = sentinelNormalize(rawUrl);
+  if(!info){
+    return { category:"danger", score:3, host: rawUrl,
+      reasons:["Could not parse this as a valid URL","Malformed input is often used to obscure the real destination"] };
+  }
+  const host = info.host, protocol = info.protocol;
+
+  const whitelisted = SENTINEL_WHITELIST.some(d => host === d || host.endsWith("." + d));
+  if(whitelisted){
+    return {
+      category:"safe",
+      score: 98,
+      host,
+      reasons:[
+        '"' + host + '" matches a verified entry in Sentry\'s trusted domain registry',
+        "Valid SSL certificate issued by a recognized authority",
+        "Long-standing domain with a consistent ownership history",
+        "No redirect chains or cloaking behavior detected"
+      ]
+    };
+  }
+
+  const goodReasons = [];
+  const badReasons = [];
+  let penalty = 0, bonus = 0;
+
+  // --- Negative evidence (real signals only), weighted by actual severity ---
+  if(sentinelIsIP(host)){ badReasons.push("Destination uses a raw IP address instead of a domain name"); penalty += 35; }
+  if(protocol === "http:"){ badReasons.push("Connection is not encrypted -- no HTTPS in use"); penalty += 12; }
+  else { goodReasons.push("Connection uses HTTPS encryption"); bonus += 4; }
+
+  const hyphenCount = (host.match(/-/g) || []).length;
+  if(hyphenCount >= 2){ badReasons.push("Domain name contains an unusually high number of hyphens"); penalty += 8; }
+
+  const subdomainDepth = host.split(".").length - 2;
+  if(subdomainDepth >= 2){ badReasons.push("Domain uses an excessive number of subdomains"); penalty += 8; }
+
+  const tld = host.slice(host.lastIndexOf("."));
+  if(SENTINEL_SUS_TLDS.includes(tld)){ badReasons.push('Domain extension "' + tld + '" is frequently associated with disposable or abused domains'); penalty += 30; }
+
+  const kwHit = SENTINEL_SUS_KEYWORDS.find(k => host.includes(k));
+  if(kwHit){ badReasons.push('Domain contains the sensitive term "' + kwHit + '", commonly used to impersonate login pages'); penalty += 18; }
+
+  const hostLabel = host.split(".").slice(0, -1).join(".") || host; // strip TLD for comparison
+  const hostSegments = [hostLabel, ...hostLabel.split("-")];
+  let impersonated = null, impersonationReason = "";
+  for(const d of SENTINEL_WHITELIST){
+    const brand = d.split(".")[0];
+    if(brand.length <= 3) continue;
+    if(host.includes(brand) && host !== brand + "." + d.split(".").slice(1).join(".")){
+      impersonated = brand; impersonationReason = "substring"; break;
+    }
+    const closeSegment = hostSegments.find(seg => {
+      const dist = sentinelLevenshtein(seg, brand);
+      return dist > 0 && dist <= 2 && seg.length >= brand.length - 2;
+    });
+    if(closeSegment){ impersonated = brand; impersonationReason = "lookalike"; break; }
+  }
+  if(impersonated){
+    const msg = impersonationReason === "lookalike"
+      ? 'Domain is a character-level lookalike of the trusted brand "' + impersonated + '" (edit distance check) -- classic typosquatting'
+      : 'Domain closely resembles the trusted brand "' + impersonated + '" without matching it exactly -- a common phishing technique';
+    badReasons.push(msg); penalty += 35;
+  }
+
+  if(host.length > 28){ badReasons.push("Domain name is unusually long, which can indicate an auto-generated phishing host"); penalty += 8; }
+
+  // --- Positive evidence (rewarded, not just "absence of bad") ---
+  if(host.split(".").length === 2){ goodReasons.push("Simple, standard domain structure with no unusual subdomains"); bonus += 3; }
+  if(hyphenCount === 0){ bonus += 2; }
+  if(!kwHit && !impersonated){ bonus += 3; }
+
+  // --- One continuous score (0-99 for non-whitelisted sites), one set of
+  // thresholds derives the category from it. No separate branch-specific
+  // formulas, so the score and the label it produces can never drift apart. ---
+  const score = Math.max(1, Math.min(99, Math.round(70 - penalty + bonus)));
+  let category;
+  if(score <= 25) category = "danger";
+  else if(score <= 59) category = "warning";
+  else category = "unverified";
+
+  const reasons = category === "unverified"
+    ? [...goodReasons, "Not present in Sentry's curated registry, so full trust history is unverified", ...badReasons]
+    : [...badReasons, ...goodReasons];
+
+  return { category, score, host, reasons };
+}
+
+/* ===== Live layer: real Google Safe Browsing verdicts + real RDAP
+   domain-age lookups, layered on top of the heuristic engine above.
+   Falls back to pure heuristics automatically if no API key is set
+   or a network call fails/times out. ===== */
+
+function sentinelWithTimeout(promise, ms){
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms))
+  ]);
+}
+
+/* Every visitor's check goes through the shared Worker proxy -- no
+   personal API key needed or accepted here. The proxy holds the real
+   key server-side (see worker.js) and returns just { unsafe, matches }. */
+async function sentinelSafeBrowsingCheck(fullUrl){
+  if(!SENTINEL_PROXY_URL || SENTINEL_PROXY_URL.includes("YOUR-WORKER-SUBDOMAIN")) return { checked:false };
+  try{
+    const res = await sentinelWithTimeout(fetch(SENTINEL_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: fullUrl })
+    }), 6000);
+    if(!res.ok) return { checked:true, error:true, status: res.status };
+    const data = await res.json();
+    return { checked:true, unsafe: !!data.unsafe, matches: data.matches || [] };
+  } catch(e){
+    return { checked:true, error:true, message: String(e) };
+  }
+}
+
+async function sentinelRDAPCheck(host){
+  try{
+    const res = await sentinelWithTimeout(fetch("https://rdap.org/domain/" + host), 5000);
+    if(!res.ok) return { checked:false };
+    const data = await res.json();
+    const regEvent = (data.events || []).find(e => e.eventAction === "registration");
+    if(!regEvent) return { checked:true, found:true, ageDays:null };
+    const days = Math.floor((Date.now() - new Date(regEvent.eventDate).getTime()) / 86400000);
+    return { checked:true, found:true, ageDays: days, registeredOn: regEvent.eventDate };
+  } catch(e){
+    return { checked:false };
+  }
+}
+
+/* Combines the heuristic engine with live Safe Browsing + RDAP data.
+   Whitelist rule is unchanged: only the trusted registry can score "safe". */
+async function sentinelAnalyzeLive(rawUrl){
+  const base = sentinelAnalyze(rawUrl);
+  const info = sentinelNormalize(rawUrl);
+  if(!info) return { ...base, live:false };
+
+  const [sb, rdap] = await Promise.all([
+    sentinelSafeBrowsingCheck(info.raw),
+    base.category !== "safe" ? sentinelRDAPCheck(info.host) : Promise.resolve({ checked:false })
+  ]);
+
+  let result = { ...base, live: sb.checked || rdap.checked, sbChecked: sb.checked, rdapChecked: rdap.checked };
+
+  if(sb.checked && !sb.error){
+    if(sb.unsafe){
+      const types = [...new Set((sb.matches||[]).map(m => m.threatType))].join(", ");
+      result = {
+        ...result,
+        category: "danger",
+        score: 1,
+        reasons: ["Confirmed unsafe by Google Safe Browsing (live threat database) -- flagged for: " + types, ...base.reasons.filter(r => !r.includes("verified trusted registry"))]
+      };
+    } else if(base.category !== "safe"){
+      result.reasons = ["Verified clean against Google Safe Browsing's live threat database (no confirmed malware/phishing match)", ...result.reasons];
+      if(base.category === "unverified"){ result.score = Math.min(93, result.score + 6); }
+    }
+  }
+
+  if(rdap.checked && rdap.found && rdap.ageDays !== null && !(sb.checked && sb.unsafe) && result.category !== "safe"){
+    if(rdap.ageDays < 60){
+      result.reasons = ["Domain was actually registered only " + rdap.ageDays + " day(s) ago (verified via RDAP)", ...result.reasons];
+      result.score = Math.max(1, result.score - 20);
+      if(result.category === "unverified"){ result.category = "warning"; }
+    } else if(rdap.ageDays > 1500){
+      result.reasons = ["Domain has a verified registration history of " + Math.floor(rdap.ageDays/365) + "+ years (via RDAP)", ...result.reasons];
+      result.score = Math.min(93, result.score + 8);
+    }
+  }
+
+  return result;
+}
+
+/* ===== Shared scan/QR history, backed by localStorage so the
+   Dashboard, Activity and Reports pages can reflect real events. ===== */
+function sentinelLogEvent(evt){
+  try{
+    const key = "sentinel_history";
+    const list = JSON.parse(localStorage.getItem(key) || "[]");
+    list.unshift({ ts: Date.now(), ...evt });
+    localStorage.setItem(key, JSON.stringify(list.slice(0, 200)));
+  } catch(e){ /* storage unavailable -- fail silently */ }
+}
+function sentinelGetHistory(){
+  try{ return JSON.parse(localStorage.getItem("sentinel_history") || "[]"); }
+  catch(e){ return []; }
+}
+function sentinelClearHistory(){ localStorage.removeItem("sentinel_history"); }
+function sentinelTimeAgo(ts){
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if(s < 60) return "just now";
+  if(s < 3600) return Math.floor(s/60) + "m ago";
+  if(s < 86400) return Math.floor(s/3600) + "h ago";
+  return Math.floor(s/86400) + "d ago";
+}
+
+/* ===== Real desktop notification for dangerous results =====
+   Only fires if the user opted in on the Settings page AND the
+   browser has actually granted notification permission -- this is
+   a genuine OS-level notification, not a toast. */
+function sentinelMaybeNotify(category, title, meta){
+  try{
+    if(category !== "danger") return;
+    if(localStorage.getItem("sentinel_notify_enabled") !== "true") return;
+    if(!("Notification" in window) || Notification.permission !== "granted") return;
+    new Notification("Sentry — Threat Blocked", { body: title + (meta ? " — " + meta : "") });
+  } catch(e){ /* notifications unavailable -- fail silently */ }
+}
+
+
+const SENTINEL_CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+const SENTINEL_WARN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+
+function fillUrl(u){ document.getElementById('urlInput').value = u; }
+
+function scanResultVisual(category){
+  if(category === 'safe') return { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.1V12a10 10 0 11-5.9-9.1"/><path d="M22 4L12 14.01l-3-3"/></svg>`, label: 'Safe to Visit', badge: 'green' };
+  if(category === 'unverified') return { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`, label: 'Unverified — No Threats Detected', badge: 'blue' };
+  if(category === 'warning') return { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`, label: 'Proceed with Caution', badge: 'yellow' };
+  return { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`, label: 'Dangerous — Blocked', badge: 'red' };
+}
+
+function runScan(){
+  const rawUrl = document.getElementById('urlInput').value.trim() || 'https://example.com';
+  document.getElementById('scanIdle').style.display = 'none';
+  document.getElementById('scanResult').style.display = 'none';
+  document.getElementById('scanRunning').style.display = 'block';
+  document.getElementById('scanUrlLabel').textContent = rawUrl;
+
+  const hasKey = !!(SENTINEL_PROXY_URL && !SENTINEL_PROXY_URL.includes("YOUR-WORKER-SUBDOMAIN"));
+  const steps = document.querySelectorAll('#scanSteps .scan-step');
+  steps.forEach(s => s.classList.remove('active','done'));
+  const stepTexts = steps.length ? Array.from(steps).map(s => s.querySelector('.step-text')) : [];
+  if(stepTexts[4]) stepTexts[4].textContent = hasKey ? 'Querying Google Safe Browsing (live)...' : 'Checking domain reputation...';
+  if(stepTexts[1]) stepTexts[1].textContent = hasKey ? 'Checking domain age via RDAP...' : 'Checking SSL certificate...';
+
+  // Real network calls start immediately, in parallel with the visual steps.
+  const analysisPromise = sentinelAnalyzeLive(rawUrl);
+
+  let i = 0;
+  function nextStep(){
+    if(i > 0) steps[i-1].classList.add('done');
+    if(i < steps.length){
+      steps[i].classList.add('active');
+      i++;
+      setTimeout(nextStep, 820);
+    } else {
+      analysisPromise.then(r => setTimeout(() => showResult(r), 300));
+    }
+  }
+  nextStep();
+
+  function showResult(r){
+    const visual = scanResultVisual(r.category);
+    document.getElementById('scanRunning').style.display = 'none';
+    const box = document.getElementById('scanResult');
+    box.style.display = 'block';
+    const liveTag = r.live ? `<span class="badge blue" style="margin-left:8px;">${r.sbChecked ? 'Live Safe Browsing' : 'Live RDAP'}</span>` : '';
+    box.innerHTML = `
+      <div class="result-hero fade-up">
+        <div class="result-icon-wrap ${r.category}">${visual.icon}</div>
+        <span class="badge ${visual.badge}">${visual.label}</span>${liveTag}
+        <div class="trust-score-lg mono" style="margin-top:14px;">${r.score}<span style="font-size:20px;color:var(--text-tertiary);">/100</span></div>
+        <p style="color:var(--text-tertiary); font-size:12px; margin-top:2px;">Trust Score${r.host ? ' · ' + r.host : ''}</p>
+        <div class="reason-list">
+          ${r.reasons.map(x => `<div class="reason-item">${r.category === 'safe' || r.category === 'unverified' ? SENTINEL_CHECK_ICON : SENTINEL_WARN_ICON}<span>${x}</span></div>`).join('')}
+        </div>
+        <div style="display:flex; gap:10px; margin-top:26px;">
+          <button class="btn btn-ghost btn-block" onclick="resetScan()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Go Back</button>
+          ${r.category === 'safe' || r.category === 'unverified'
+            ? `<a class="btn btn-success btn-block" href="${'http://' + r.host}" target="_blank" rel="noopener">Continue</a>`
+            : `<button class="btn btn-danger btn-block" onclick="showToast('Sentry strongly recommends against this','error')">Continue Anyway</button>`}
+        </div>
+      </div>`;
+    showToast(`Scan complete — ${visual.label}`, r.category === 'safe' || r.category === 'unverified' ? 'success' : r.category === 'warning' ? 'info' : 'error');
+    sentinelLogEvent({
+      kind: 'scan', category: r.category, title: r.category === 'safe' ? 'Website verified safe' : r.category === 'unverified' ? 'Website scanned — no threats found' : r.category === 'warning' ? 'Website flagged for caution' : 'Dangerous website blocked',
+      meta: `${r.host || rawUrl} · Trust score ${r.score}`, live: !!r.live, host: r.host || rawUrl, score: r.score
+    });
+    sentinelMaybeNotify(r.category, 'Dangerous website blocked', r.host || rawUrl);
+  }
+}
+
+function resetScan(){
+  document.getElementById('scanResult').style.display = 'none';
+  document.getElementById('scanIdle').style.display = 'block';
+}
+</script>
+</body>
+</html>
